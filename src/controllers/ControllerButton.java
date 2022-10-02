@@ -34,7 +34,7 @@ public class ControllerButton implements EventHandler<ActionEvent> {
             if(actionEvent.getSource() == view.getButtonInit())
                 view.showPyramideGains();
             else if(actionEvent.getSource() == view.getButtonStart()) {
-                view.beforeQuestion(1);
+                view.beforeQuestion(6);
             } else if(actionEvent.getSource() == view.getButtonExplications()) {
                 String expl = model.getJeu().getQuestionNum(view.getNumActualQ()).getExplications();
                 if(expl != null) {

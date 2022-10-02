@@ -18,7 +18,7 @@ public class Jeu {
     public Jeu() {
         this.numJeu = 1;
         this.libelleJeu = "Jeu";
-        this.questions = List.of(new Question(1, "Laquelle de ces propositions désigne une variété de petit oignon", null,null,null, "C'est évident que c'est la cébette","C'est évident que c'est la cébette",null, null),
+        this.questions = List.of(new Question(1, "Laquelle de ces propositions désigne une variété de petit oignon ?", null,null,null, "C'est évident que c'est la cébette","C'est évident que c'est la cébette",null, null),
                                  new Question(2, "Si une téléspectatrice de « L'Amour est dans le Pré »\n veut rencontrer un agriculteur, elle doit …",null,null,null, "Logiquement en lui écrivant une lettre","Vous voulez qu'il fasse quoi d'autre à part écrire une lettre ?",null, null),
                                  new Question(3,"En voiture, votre passager peut être verbalisé quand il …",null,null,null, "La réponse, tu l'as déjà devant tes yeux","La réponse, tu l'as déjà devant tes yeux",null, null),
                                  new Question(4,"Complétez cette déclaration qui aurait été faite lors de\nla bataille de Fontenoy en 1745 : « Messieurs les anglais … »",null,null,null, null,null,null, null),
@@ -104,7 +104,7 @@ public class Jeu {
                                     new Reponse(33,"22 degrés",false), new Reponse(34,"42 degrés",true), new Reponse(35,"52 degrés",false), new Reponse(36,"62 degrés",false),
                                     new Reponse(37,"Des lampions",false), new Reponse(38,"Des pots de fleurs",false), new Reponse(39,"Des drapeaux",true), new Reponse(40,"Des échafaudages",false),
                                     new Reponse(41,"La glande thyroïde",false), new Reponse(42,"La glande surrénale",true), new Reponse(43,"La glande lacrymale",false), new Reponse(44,"Le pancréas",false),
-                                    new Reponse(45,"Jean de La Fontaine",false), new Reponse(46,"Marcel Pagnol",false), new Reponse(47,"Jean-Yves Cousteau",false), new Reponse(48,"Émile Zola",true),
+                                    new Reponse(45,"Jean de La Fontaine",false), new Reponse(46,"Marcel Pagnol",false), new Reponse(47,"Jacques-Yves Cousteau",false), new Reponse(48,"Émile Zola",true),
                                     new Reponse(49,"Le morpion",false), new Reponse(50,"Les petits chevaux",false), new Reponse(51,"Le jeu de l’oie",false), new Reponse(52,"Le jeu d’échecs",true),
                                     new Reponse(53,"Jean Carzou",false), new Reponse(54,"Charles Morin",true), new Reponse(55,"James Pradier",false), new Reponse(56,"Michel Sima",false),
                                     new Reponse(57,"Milan Kundera",true), new Reponse(58,"G. Garcia Marquez",false), new Reponse(59,"Alexander Soljenitsyne",false), new Reponse(60,"Italo Calvino",false));

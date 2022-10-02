@@ -39,7 +39,7 @@ public class View extends Stage {
     private int numQ;
     private List<String> reps;
     private Button[] bTextReps = {null, null, null, null};
-    private GridPane gpArret, gpLQu, gpSomme;
+    private GridPane gpArret, gpLQu, gpSomme, gpImgRep;
 
     private AudioPlay audioPyramide, audioStartQ, audioValid, audioReveal;
     private Button bInit, bStart, bRepValid, bExplications, bValidPensee;
@@ -182,9 +182,11 @@ public class View extends Stage {
         audioPyramide.stop();
         rootPane.getChildren().clear();
 
-        if(numQ == 1) {
+        if(numQ == 1)
             new AudioPlay("C:/Users/fdavid5/Desktop/javafxQVGDM/src/jingles/bruitRun.wav").play();
-        }
+
+        if(gpImgRep != null)
+            rootPane.getChildren().add(gpImgRep);
 
         Button bPlayQ = new Button();
         rootPane.getChildren().add(bPlayQ);
@@ -203,8 +205,8 @@ public class View extends Stage {
     }
 
     public void playQuestion(int numQ) throws UnsupportedAudioFileException, LineUnavailableException, IOException, InterruptedException {
-        /*if(numQ >= 5)
-            audioReveal.stop();*/
+        if(numQ >= 5 && audioReveal != null)
+            audioReveal.stop();
 
         rootPane.getChildren().clear();
         afficheQuestion(numQ);
@@ -316,7 +318,7 @@ public class View extends Stage {
             audioValid = new AudioPlay("C:/Users/fdavid5/Desktop/QVGDMJavaFx/src/jingles/dernierMot/DM" + numQ + ".wav");
         }
 
-        if(numQ != 1)
+        if(numQ%5 != 1)
             gpArret.setVisible(false);
 
         for (int i = 0; i < bTextReps.length; i++) {
@@ -422,12 +424,13 @@ public class View extends Stage {
             }
         };
 
+        PauseTransition pauseImg;
         if(model.getJeu().getQuestionNum(numQ).getImageRep() != null) {
             ImageView imgRep = new ImageView("/model/imagesRep/" + model.getJeu().getQuestionNum(numQ).getImageRep());
             imgRep.setFitHeight(300);
             imgRep.setFitWidth(300);
 
-            GridPane gpImgRep = new GridPane();
+            gpImgRep = new GridPane();
             gpImgRep.getChildren().add(imgRep);
             gpImgRep.setTranslateX((width - imgRep.getFitWidth())/2.0);
             gpImgRep.setTranslateY((imageQR.getTranslateY() - imgRep.getFitHeight())/2.0);
@@ -437,9 +440,12 @@ public class View extends Stage {
             fadeImg.setFromValue(0.0);
             fadeImg.setToValue(1.0);
             fadeImg.play();
-        }
 
-        PauseTransition pauseImg = new PauseTransition(Duration.seconds(2));
+            pauseImg = new PauseTransition(Duration.seconds(2));
+        } else {
+            gpImgRep = null;
+            pauseImg = new PauseTransition(Duration.millis(50));
+        }
         pauseImg.setOnFinished(event);
         new SequentialTransition(pauseImg).play();
         return idR == idBonneRep;
@@ -583,6 +589,9 @@ public class View extends Stage {
         gpSomme.setAlignment(Pos.CENTER);
         gpSomme.setMinSize(rootPane.getWidth(),136.5);
         rootPane.getChildren().add(gpSomme);
+
+        if(gpImgRep != null)
+            rootPane.getChildren().add(gpImgRep);
 
         setRootPane(rootPane);
     }
