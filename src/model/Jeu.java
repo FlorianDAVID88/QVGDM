@@ -10,7 +10,7 @@ public class Jeu {
     private int numJeu;
     private String libelleJeu;
     private List<Question> questions;
-    private String[] sommesQuestions;
+    private Somme[] sommesQuestions;
 
     private Joker[] jokers;
     private boolean isFinished;
@@ -35,10 +35,11 @@ public class Jeu {
                                  new Question(15,"Dans un livre, qui dit que les animaux sont\n« le véritable test moral de l’humanité » ?",null,null,null, null,null,null, null));
         setRep();
 
-        this.sommesQuestions = new String[]{"100 €","200 €","300 €","500 €","1 000 €",
-                                            "2 000 €","4 000 €","8 000 €","12 000 €","24 000 €",
-                                            "36 000 €","72 000 €","150 000 €","300 000 €",
-                                            "1 MILLION €"};
+        this.sommesQuestions = new Somme[]{new Somme(1,100),new Somme(2,200),new Somme(3,300),
+                                            new Somme(4,500), new Somme(5,1000), new Somme(6,2000),
+                                            new Somme(7,4000), new Somme(8,8000), new Somme(9,12000),
+                                            new Somme(10,24000), new Somme(11,36000), new Somme(12,72000),
+                                            new Somme(13,150000),new Somme(14,300000), new Somme(15,1000000)};
 
         this.jokers = new Joker[]{new Joker(1, "50/50"),
                                 new Joker(2, "Appel à un ami"),
@@ -67,18 +68,18 @@ public class Jeu {
     }
 
     public String getSomme(int numQ) {
-        return this.sommesQuestions[numQ-1];
+        return this.sommesQuestions[numQ-1].getSomme();
     }
 
     public String getSommePalier(int numQuestion) {
         if(numQuestion <= 5)
             return "O €";
         else if (numQuestion <= 10)
-            return this.sommesQuestions[4];
+            return this.sommesQuestions[4].getSomme();
         else if (numQuestion <= 15)
-            return this.sommesQuestions[9];
+            return this.sommesQuestions[9].getSomme();
         else
-            return this.sommesQuestions[14];
+            return this.sommesQuestions[14].getSomme();
     }
 
     public Joker getJokerNum(int num) {
