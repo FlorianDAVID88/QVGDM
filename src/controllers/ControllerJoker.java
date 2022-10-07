@@ -14,6 +14,11 @@ public class ControllerJoker implements EventHandler<MouseEvent> {
     Model model;
     View view;
 
+    /**
+     * Initialise un ControllerJoker courant avec le modèle et la vue de l'application
+     * @param model le Model de l'application
+     * @param view la vue de l'application
+     */
     public ControllerJoker(Model model, View view) {
         this.model = model;
         this.view = view;

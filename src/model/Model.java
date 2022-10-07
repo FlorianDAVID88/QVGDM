@@ -24,7 +24,7 @@ public class Model {
         frameGap = 10000000;
 
         for(int j = 0; j < nbJeux; j++) {
-            jeux.add(new Jeu(j+1));
+            jeux.add(j,new Jeu(j+1));
         }
     }
 

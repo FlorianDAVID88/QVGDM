@@ -37,6 +37,7 @@ public class View extends Stage {
     private static final int NQUESTIONS = 15;
     private static final int NJOKERS = 4;
     private static final double COEFF_AGR = 1.7075;
+    private boolean playerHasLose;
     private int numQ;
     private List<String> reps;
     private Button[] bTextReps = {null, null, null, null};
@@ -54,9 +55,14 @@ public class View extends Stage {
                                                                         new ImageView("images/jokerUtilise.png"),
                                                                         new ImageView("images/jokerUtilise.png")};
 
+    /**
+     * Initialise la View du jeu avec le Model de l'application
+     * @param model le modèle de l'application
+     */
     public View(Model model) {
         this.model = model;
         this.numQ = 1;
+        this.playerHasLose = false;
 
         this.width = model.getWidth();
         this.height = model.getHeight();
@@ -88,6 +94,13 @@ public class View extends Stage {
         bInit.setOnAction(new ControllerButton(model,this));
     }
 
+    /**
+     * Affiche la pyramide des gains
+     * @throws UnsupportedAudioFileException si le type de fichier audio n'est pas reconnu
+     * @throws LineUnavailableException si la ligne ne peut pas être ouverte si elle est indisponible
+     *                                  ou déjà utilisée sur une autre application
+     * @throws IOException si l'entrée/sortie du fichier audio ont échoué ou sont interrompues
+     */
     public void showPyramideGains() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         rootPane.getChildren().clear();
         Label[] labelSomme = new Label[NQUESTIONS];
@@ -178,6 +191,14 @@ public class View extends Stage {
         setRootPane(rootPane);
     }
 
+    /**
+     * Affiche une route vide avant d'afficher la question numéro numQ
+     * @param numQ le numéro de la question
+     * @throws UnsupportedAudioFileException si le type de fichier audio n'est pas reconnu
+     * @throws LineUnavailableException si la ligne ne peut pas être ouverte si elle est indisponible
+     *                                  ou déjà utilisée sur une autre application
+     * @throws IOException si l'entrée/sortie du fichier audio ont échoué ou sont interrompues
+     */
     public void beforeQuestion(int numQ) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         this.numQ = numQ;
         audioPyramide.stop();
@@ -205,6 +226,15 @@ public class View extends Stage {
         setRootPane(rootPane);
     }
 
+    /**
+     * Affiche la question numéro numQ dans l'application
+     * @param numQ le numéro de la question
+     * @throws UnsupportedAudioFileException si le type de fichier audio n'est pas reconnu
+     * @throws LineUnavailableException si la ligne ne peut pas être ouverte si elle est indisponible
+     *                                  ou déjà utilisée sur une autre application
+     * @throws IOException si l'entrée/sortie du fichier audio ont échoué ou sont interrompues
+     * @throws InterruptedException si le Thread est interrompu
+     */
     public void playQuestion(int numQ) throws UnsupportedAudioFileException, LineUnavailableException, IOException, InterruptedException {
         if(numQ >= 5 && audioReveal != null)
             audioReveal.stop();
@@ -236,6 +266,9 @@ public class View extends Stage {
         }
     }
 
+    /**
+     * Affiche tous les jokers dans l'affichage de la question
+     */
     public void afficheJokers() {
         for(int i = 0; i < NJOKERS; i++) {
             imgJokers[i] = new ImageView("images/joker" + (i+1) + ".png");
@@ -271,6 +304,11 @@ public class View extends Stage {
         }
     }
 
+    /**
+     * Affiche la question numQ qu'on soit en plein jeu ou à l'arrêt
+     * (quand un joueur décide d'arrêter la partie)
+     * @param numQ le numéro de la question
+     */
     public void afficheQuestion(int numQ) {
         Label lQu = new Label(model.getJeu().getQuestionNum(numQ).getLibelleQuestion());
 
@@ -313,6 +351,15 @@ public class View extends Stage {
         }
     }
 
+    /**
+     * Valide la réponse numéro idRep choisie à la question numQ
+     * @param numQ le numéro de la question
+     * @param idRep l'identifiant correpondant à la réponse choisie (entre 0 et 3)
+     * @throws UnsupportedAudioFileException si le type de fichier audio n'est pas reconnu
+     * @throws LineUnavailableException si la ligne ne peut pas être ouverte si elle est indisponible
+     *                                  ou déjà utilisée sur une autre application
+     * @throws IOException si l'entrée/sortie du fichier audio ont échoué ou sont interrompues
+     */
     public void validReponse(int numQ, int idRep) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         if(numQ > 5) {
             audioStartQ.stop();
@@ -353,6 +400,7 @@ public class View extends Stage {
                 boolean bool = revealReponse(numQ, idRep);
                 if(!bool) {
                     model.getJeu().setFinishGame();
+                    setPlayerHasLose();
                 }
             } catch (InterruptedException | UnsupportedAudioFileException |
                      LineUnavailableException | IOException e) {
@@ -361,6 +409,10 @@ public class View extends Stage {
         });
     }
 
+    /**
+     * Affiche la bonne réponse à la question donnée
+     * @param idBonneRep i'identifiant de la bonne réponse (entre 0 et 3)
+     */
     public void afficheReponse(int idBonneRep) {
         ImageView imageBonneRep = new ImageView("images/CaseVerte.png");
         imageBonneRep.setFitWidth(604.5);
@@ -383,6 +435,17 @@ public class View extends Stage {
         setRootPane(rootPane);
     }
 
+    /**
+     * Affiche la bonne réponse et retourne si le joueur l'a choisie ou non
+     * @param numQ le numéro de la question
+     * @param idR l'identifiant de la réponse choisie par le joueur à la question numéro numQ
+     * @return true si le joueur a choisi la bonne réponse, false sinon
+     * @throws InterruptedException si le Thread est interrompu
+     * @throws UnsupportedAudioFileException si le type de fichier audio n'est pas reconnu
+     * @throws LineUnavailableException si la ligne ne peut pas être ouverte si elle est indisponible
+     *                                  ou déjà utilisée sur une autre application
+     * @throws IOException si l'entrée/sortie du fichier audio ont échoué ou sont interrompues
+     */
     public boolean revealReponse(int numQ, int idR) throws InterruptedException, UnsupportedAudioFileException, LineUnavailableException, IOException {
         int idBonneRep = model.getJeu().getQuestionNum(numQ).getIdBonneRep();
         ControllerButton newCB = new ControllerButton(model, this);
@@ -418,7 +481,7 @@ public class View extends Stage {
                         audioStartQ.stop();
                     audioReveal = new AudioPlay("C:/Users/fdavid5/Desktop/QVGDMJavaFx/src/jingles/perdu/Perdu" + numQ + ".wav");
                     model.getJeu().setFinishGame();
-                    System.out.println("Perdu : " + model.getJeu().getSommePalier(numQ));
+                    System.out.println("Perdu : " + lose(numQ));
                 }
             } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
                 throw new RuntimeException(e);
@@ -452,6 +515,15 @@ public class View extends Stage {
         return idR == idBonneRep;
     }
 
+    /**
+     * Le joueur utilise un joker (joker n°idJ) à la question numéro numQ
+     * @param numQ le numéro de la question
+     * @param idJ l'identifiant du joker utilisé
+     * @throws UnsupportedAudioFileException si le type de fichier audio n'est pas reconnu
+     * @throws LineUnavailableException si la ligne ne peut pas être ouverte si elle est indisponible
+     *                                  ou déjà utilisée sur une autre application
+     * @throws IOException si l'entrée/sortie du fichier audio ont échoué ou sont interrompues
+     */
     public void utiliserJoker(int numQ, int idJ) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         int idBonneRep = model.getJeu().getQuestionNum(numQ).getIdBonneRep();
         switch (idJ) {
@@ -524,23 +596,20 @@ public class View extends Stage {
                                 }
                             });
                             new SequentialTransition(newPause).play();
+
+                            PauseTransition pauseExit = new PauseTransition(Duration.seconds(2));
+                            pauseExit.setOnFinished(actionEvent1 -> {
+                                rootPane.getChildren().remove(graphAvis);
+                            });
+                            new SequentialTransition(pauseExit).play();
+
+                            PauseTransition pauseExit2 = new PauseTransition(Duration.seconds(5));
+                            pauseExit.setOnFinished(actionEvent1 -> {
+                                rootPane.getChildren().remove(graph0);
+                            });
+                            new SequentialTransition(pauseExit2).play();
                         });
                         new SequentialTransition(pause).play();
-
-                        PauseTransition pauseExit = new PauseTransition(Duration.seconds(5));
-                        pauseExit.setOnFinished(actionEvent1 -> {
-                            FadeTransition ftExitPublic1 = new FadeTransition(Duration.seconds(1),graphAvis);
-                            ftExitPublic1.setFromValue(1);
-                            ftExitPublic1.setToValue(0);
-
-                            FadeTransition ftExitPublic2 = new FadeTransition(Duration.seconds(1),graph0);
-                            ftExitPublic1.setFromValue(1);
-                            ftExitPublic1.setToValue(0);
-
-                            ftExitPublic1.play();
-                            ftExitPublic2.play();
-                        });
-                        new SequentialTransition(pauseExit).play();
                     } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
                         throw new RuntimeException(e);
                     }
@@ -571,10 +640,19 @@ public class View extends Stage {
         model.getJeu().getJokerNum(idJ).setUseJoker();
     }
 
+    /**
+     * Affiche la somme gagnée par le joueur (à la fin d'une question bien répondue ou à la fin du jeu)
+     * @param numQ le numéro de la question précedemment posée (numQ - 1 si arrêt du jeu)
+     */
     public void showSommeGagnee(int numQ) {
         rootPane.getChildren().clear();
 
-        Label lSomme = new Label(model.getJeu().getSomme(numQ));
+        Label lSomme;
+        if(getPlayerHasLose())
+            lSomme = new Label(lose(numQ));
+        else
+            lSomme = new Label(model.getJeu().getSomme(numQ));
+
         lSomme.setFont(new Font("Copperplate Gothic Bold", 100));
         lSomme.setStyle("-fx-text-fill: orange; -fx-text-alignment: center;");
         lSomme.setTranslateY(380);
@@ -597,6 +675,14 @@ public class View extends Stage {
         setRootPane(rootPane);
     }
 
+    /**
+     * Le joueur décide d'arrêter le jeu
+     * @throws UnsupportedAudioFileException si le type de fichier audio n'est pas reconnu
+     * @throws LineUnavailableException si la ligne ne peut pas être ouverte si elle est indisponible
+     *                                  ou déjà utilisée sur une autre application
+     * @throws IOException si l'entrée/sortie du fichier audio ont échoué ou sont interrompues
+     * @throws InterruptedException si le Thread est interrompu
+     */
     public void stopGame() throws UnsupportedAudioFileException, LineUnavailableException, IOException, InterruptedException {
         audioStartQ.stop();
         model.getJeu().setFinishGame();
@@ -607,6 +693,7 @@ public class View extends Stage {
 
         setRootPane(rootPane);
     }
+
 
     private void validRepFin() {
         for (int r = 0; r < bTextReps.length; r++) {
@@ -648,6 +735,13 @@ public class View extends Stage {
 
     public void setRootPane(Pane rootPane) {
         this.rootPane = rootPane;
+    }
+    public void setPlayerHasLose() {
+        this.playerHasLose = true;
+    }
+
+    public boolean getPlayerHasLose() {
+        return this.playerHasLose;
     }
 
     public Button[] getAllTextReps() {
@@ -694,10 +788,12 @@ public class View extends Stage {
         return gpArret;
     }
 
+    /**
+     * Le joueur a perdu à la question numQ
+     * @param numQ le numéro de la question
+     * @return la somme gagnée par le joueur (un des paliers)
+     */
     public String lose(int numQ) {
-        if(numQ <= 5)
-            return "0 €";
-
         return model.getJeu().getSommePalier(numQ);
     }
 }

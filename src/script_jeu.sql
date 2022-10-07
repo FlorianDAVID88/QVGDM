@@ -4,6 +4,12 @@ CREATE TABLE CATEGORIE_QUESTION(
     PRIMARY KEY(id_categorie)
 );
 
+CREATE TABLE SOMME(
+    id_somme INT AUTO_INCREMENT NOT NULL,
+    contenu_somme INT,
+    PRIMARY KEY(id_somme)
+);
+
 CREATE TABLE JEU(
     id_jeu INT AUTO_INCREMENT NOT NULL,
     libelle_jeu VARCHAR(255),
@@ -66,6 +72,9 @@ CREATE TABLE comprend(
 
 INSERT INTO CATEGORIE_QUESTION(libelle_categorie) VALUES
 (NULL),(),(),(),(),(),(),(),();
+
+INSERT INTO SOMME(contenu_somme) VALUES
+(100),(200),(300),(500),(1000),(2000),(4000),(8000),(12000),(24000),(36000),(72000),(150000),(300000),(1000000);
 
 INSERT INTO JEU(libelle_jeu) VALUES
 (),(),(),(),(),();

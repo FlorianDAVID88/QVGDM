@@ -8,6 +8,7 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import model.Model;
 import view.AudioPlay;
 import view.View;
@@ -22,7 +23,11 @@ public class ControllerButton implements EventHandler<ActionEvent> {
     View view;
     Button newBExpli;
 
-
+    /**
+     * Initialise un ControllerButton courant avec le modèle et la vue de l'application
+     * @param model le Model de l'application
+     * @param view la vue de l'application
+     */
     public ControllerButton(Model model, View view) {
         this.model = model;
         this.view = view;
@@ -50,8 +55,14 @@ public class ControllerButton implements EventHandler<ActionEvent> {
                 }
 
                 if(model.getJeu().isFinished() || view.getNumActualQ() == 15) {
-                    view.showSommeGagnee(view.getNumActualQ() - 1);
-                    view = new View(model);
+                    if(view.getPlayerHasLose())
+                        view.showSommeGagnee(view.getNumActualQ());
+                    else
+                        view.showSommeGagnee(view.getNumActualQ() - 1);
+
+                    view.getGridPaneSomme().addEventHandler(MouseEvent.MOUSE_CLICKED, mouseE -> {
+                        view = new View(model);
+                    });
                 } else {
                     view.showSommeGagnee(view.getNumActualQ());
                     view.getGridPaneSomme().setOnMouseClicked(new ControllerMouse(model, view));

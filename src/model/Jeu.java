@@ -4,9 +4,12 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Jeu {
+    private static final int NQUESTIONS = 15;
+    private static final int NJOKERS = 4;
     private int numJeu;
     private String libelleJeu;
     private List<Question> questions;
@@ -15,6 +18,10 @@ public class Jeu {
     private Joker[] jokers;
     private boolean isFinished;
 
+    /**
+     * Initialise le Jeu courant (utilisé en attendant
+     * que la base de données fonctionne convenablement)
+     */
     public Jeu() {
         this.numJeu = 1;
         this.libelleJeu = "Jeu";
@@ -49,6 +56,11 @@ public class Jeu {
         this.isFinished = false;
     }
 
+    /**
+     * Initialise le Joker courant avec son id et son nom à partir de l'id avec la base de données MySQL
+     * @param id l'identifiant du jeu
+     * @throws SQLException s'il y a une erreur dans la base de données ou dans une requête SQL
+     */
     public Jeu(int id) throws SQLException {
         Connection con = new ConnectionDB("flodavid","#Apoal75","qvgdm_javafx").getConnection();
         Statement stmt = con.createStatement();
@@ -56,8 +68,31 @@ public class Jeu {
 
         this.numJeu = id;
         this.libelleJeu = resultSet.getString("libelle_jeu");
+        this.isFinished = false;
+
+        this.questions = new ArrayList<>(NQUESTIONS);
+        for(int q = 0; q < NQUESTIONS; q++) {
+            this.questions.add(q,new Question(q+1));
+        }
+
+        this.sommesQuestions = new Somme[NQUESTIONS];
+        for (int s = 0; s < NQUESTIONS; s++) {
+            resultSet = stmt.executeQuery("SELECT contenu_somme FROM SOMME WHERE id_somme = " + (s+1) + ";");
+            this.sommesQuestions[s+1] = new Somme(s+1,resultSet.getInt("contenu_somme"));
+        }
+
+        this.jokers = new Joker[NJOKERS];
+        for (int j = 0; j < NJOKERS; j++) {
+            resultSet = stmt.executeQuery("SELECT libelle_joker FROM JOKER WHERE id_somme = " + (j+1) + ";");
+            this.jokers[j] = new Joker(j+1,resultSet.getString("libelle_joker"));
+        }
     }
 
+    /**
+     * Retourne la question numéro n
+     * @param n le numéro de la Question demandée
+     * @return le libellé (String) de la question numéro n
+     */
     public Question getQuestionNum(int n) {
         try {
             return this.questions.get(n-1);
@@ -67,32 +102,58 @@ public class Jeu {
         }
     }
 
+    /**
+     * Retourne la somme correspondante à la question numéro numQ
+     * @param numQ le numéro de la Question demandée
+     * @return la somme en jeu pour la question numQ
+     */
     public String getSomme(int numQ) {
         return this.sommesQuestions[numQ-1].getSomme();
     }
 
+    /**
+     * Renvoie la somme gagnée lorsqu'on a perdu à la question numQuestion
+     * (correspond soit à 0€ ou à un des deux premiers paliers du jeu)
+     * @param numQuestion le numéro de la question où on a perdu
+     * @return la somme remportée lorsqu'on a perdu à la question
+     */
     public String getSommePalier(int numQuestion) {
         if(numQuestion <= 5)
             return "O €";
         else if (numQuestion <= 10)
             return this.sommesQuestions[4].getSomme();
-        else if (numQuestion <= 15)
-            return this.sommesQuestions[9].getSomme();
         else
-            return this.sommesQuestions[14].getSomme();
+            return this.sommesQuestions[9].getSomme();
     }
 
+    /**
+     * Retourn le Joker numéro num dans le Jeu courant
+     * @param num l'identifiant du Joker donné (entre 0 et 3)
+     * @return le Joker N°num
+     */
     public Joker getJokerNum(int num) {
         return this.jokers[num];
     }
 
+    /**
+     * Retourne si la partie est terminée ou non
+     * @return true si la partie est terminée, false sinon
+     */
     public boolean isFinished() {
         return this.isFinished;
     }
 
+    /**
+     * La partie se termine
+     */
     public void setFinishGame() {
         this.isFinished = true;
     }
+
+    /**
+     * Ajoute les Réponses aux Questions données dans le constructeur
+     * (utilisé en attendant que la base de données fonctionne convenablement)
+     */
     private void setRep() {
         List<Reponse> rep = List.of(new Reponse(1,"La cébette",true), new Reponse(2,"La cénulle",false), new Reponse(3,"La cétidio",false), new Reponse(4,"La cébien",false),
                                     new Reponse(5,"Faire du rodéo",false), new Reponse(6,"Se déguiser en lapin",false), new Reponse(7,"Lui écrire une lettre",true), new Reponse(8,"Être une peau de vache",false),
