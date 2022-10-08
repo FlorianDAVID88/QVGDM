@@ -1,14 +1,18 @@
 package controllers;
 
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
+import javafx.geometry.HPos;
+import javafx.geometry.Pos;
+import javafx.geometry.VPos;
+import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 import model.Model;
 import view.AudioPlay;
 import view.View;
@@ -39,7 +43,7 @@ public class ControllerButton implements EventHandler<ActionEvent> {
             if(actionEvent.getSource() == view.getButtonInit())
                 view.showPyramideGains();
             else if(actionEvent.getSource() == view.getButtonStart()) {
-                view.beforeQuestion(1);
+                view.beforeQuestion(8);
             } else if(actionEvent.getSource() == view.getButtonExplications()) {
                 String expl = model.getJeu().getQuestionNum(view.getNumActualQ()).getExplications();
                 if(expl != null) {
@@ -51,6 +55,21 @@ public class ControllerButton implements EventHandler<ActionEvent> {
 
                     Alert alertExplications = new Alert(Alert.AlertType.NONE, expl, bNextQu);
                     alertExplications.setHeaderText("Explications");
+
+                    String imgExplStr = model.getJeu().getQuestionNum(view.getNumActualQ()).getImageExplic();
+                    if(imgExplStr != null) {
+                        GridPane gpExpl = new GridPane();
+                        ImageView imgExpl = new ImageView("/model/imagesExpl/" + imgExplStr);
+                        imgExpl.setFitHeight(200);
+                        imgExpl.setFitWidth(200 * (imgExpl.getImage().getWidth()/imgExpl.getImage().getHeight()));
+                        gpExpl.addRow(0, imgExpl);
+
+                        GridPane.setValignment(gpExpl, VPos.CENTER);
+                        gpExpl.setVgap(5);
+
+                        alertExplications.getDialogPane().setHeader(gpExpl);
+                    }
+
                     alertExplications.showAndWait();
                 }
 

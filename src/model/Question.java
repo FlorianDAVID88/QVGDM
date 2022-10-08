@@ -83,6 +83,14 @@ public class Question {
         return imageRep;
     }
 
+    public String getImageQu() {
+        return imageQu;
+    }
+
+    public String getImageExplic() {
+        return imageExplic;
+    }
+
     public String getFeeling() {
         return feeling;
     }

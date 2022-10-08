@@ -41,7 +41,7 @@ public class View extends Stage {
     private int numQ;
     private List<String> reps;
     private Button[] bTextReps = {null, null, null, null};
-    private GridPane gpArret, gpLQu, gpSomme, gpImgRep;
+    private GridPane gpArret, gpLQu, gpSomme, gpImgQu, gpImgRep;
 
     private AudioPlay audioPyramide, audioStartQ, audioValid, audioReveal;
     private Button bInit, bStart, bRepValid, bExplications, bValidPensee;
@@ -256,6 +256,28 @@ public class View extends Stage {
 
             gpArret.setOnMouseClicked(new ControllerMouse(model,this));
         }
+
+        String imgQuStr = model.getJeu().getQuestionNum(numQ).getImageQu();
+        if(imgQuStr != null) {
+            ImageView imgQu = new ImageView("/model/imagesQu/" + imgQuStr);
+            imgQu.setFitHeight(300);
+            imgQu.setFitWidth(300 * (imgQu.getImage().getWidth()/imgQu.getImage().getHeight()));
+
+            gpImgQu = new GridPane();
+            gpImgQu.getChildren().add(imgQu);
+            gpImgQu.setTranslateX((width - imgQu.getFitWidth())/2.0);
+            gpImgQu.setTranslateY((imageQR.getTranslateY() - imgQu.getFitHeight())/2.0);
+            rootPane.getChildren().add(gpImgQu);
+
+            FadeTransition fadeImg = new FadeTransition(Duration.seconds(2),imgQu);
+            fadeImg.setFromValue(0.0);
+            fadeImg.setToValue(1.0);
+            fadeImg.play();
+
+        } else {
+            gpImgRep = null;
+        }
+
         afficheJokers();
         setRootPane(rootPane);
 
@@ -489,10 +511,11 @@ public class View extends Stage {
         };
 
         PauseTransition pauseImg;
-        if(model.getJeu().getQuestionNum(numQ).getImageRep() != null) {
-            ImageView imgRep = new ImageView("/model/imagesRep/" + model.getJeu().getQuestionNum(numQ).getImageRep());
+        String imgRepStr = model.getJeu().getQuestionNum(numQ).getImageRep();
+        if(imgRepStr != null) {
+            ImageView imgRep = new ImageView("/model/imagesRep/" + imgRepStr);
             imgRep.setFitHeight(300);
-            imgRep.setFitWidth(300);
+            imgRep.setFitWidth(300 * (imgRep.getImage().getWidth()/imgRep.getImage().getHeight()));
 
             gpImgRep = new GridPane();
             gpImgRep.getChildren().add(imgRep);
@@ -562,6 +585,7 @@ public class View extends Stage {
                 jokersUsed[2].setVisible(true);
                 jokersUsed[2].addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
                     try {
+                        jokersUsed[2].setOnMouseClicked(null);
                         audioPublic.stop();
                         new AudioPlay("C:/Users/fdavid5/Desktop/QVGDMJavaFx/src/jingles/jokers/public2.wav").play();
 
